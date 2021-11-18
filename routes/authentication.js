@@ -5,10 +5,6 @@ const bcrypt = require('bcrypt');
 const router = express.Router()
 
 
-
-
-
-
 router.post('/register', async(req, res) => {
 
     const uniqueId = uuidv4();
@@ -16,8 +12,8 @@ router.post('/register', async(req, res) => {
     if(req.body.password == null){
         res.send(JSON.stringify({succes: false, body: 'PasswordCannotBeNull'}))
     }else{
-        await bcrypt.hash(req.body.password, salt)
-        const createdUser = await User.create({id: uniqueId,name: req.body.name, password: req.body.password ,phone: req.body.phone, email: req.body.email}).then((result) =>{
+        const cryptedPassword = await bcrypt.hash(req.body.password, salt)
+        const createdUser = await User.create({id: uniqueId,name: req.body.name, password: cryptedPassword ,phone: req.body.phone, email: req.body.email}).then((result) =>{
             res.send(JSON.stringify({succes: true, body: result}))
         }).catch((err)=>{
             res.send(JSON.stringify({succes: false, body: err}))
