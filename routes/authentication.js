@@ -8,17 +8,21 @@ const router = express.Router()
 
 
 
+
 router.post('/register', async(req, res) => {
 
     const uniqueId = uuidv4();
     const salt = await bcrypt.genSalt(10);
-    req.body.password = await bcrypt.hash(req.body.password, salt);
-    const createdUser = await User.create({id: uniqueId,name: req.body.name, password: req.body.password ,phone: req.body.phone, email: req.body.email}).then((result) =>{
-        res.send(JSON.stringify({succes: true, body: result}))
-    }).catch((err)=>{
-        res.send(JSON.stringify({succes: false, body: err}))
-    })
-
+    if(req.body.password == null){
+        res.send(JSON.stringify({succes: false, body: 'PasswordCannotBeNull'}))
+    }else{
+        await bcrypt.hash(req.body.password, salt)
+        const createdUser = await User.create({id: uniqueId,name: req.body.name, password: req.body.password ,phone: req.body.phone, email: req.body.email}).then((result) =>{
+            res.send(JSON.stringify({succes: true, body: result}))
+        }).catch((err)=>{
+            res.send(JSON.stringify({succes: false, body: err}))
+        })
+    }
 });
 
 router.post('/login', async(req, res) => {
